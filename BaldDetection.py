@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import filedialog
 import cv2
+from PIL import Image, ImageTk
 from ultralytics import YOLO
 import torch
 
-model = YOLO("best.pt")
+model = YOLO("models/bald.pt")
 
 def preprocess_image(image):
     image = cv2.resize(image, (192, 192))
@@ -30,9 +31,11 @@ def detect_baldness(file_path):
 
     for r in results:
         im_array = r.plot()
-        cv2.imshow("Detected Baldness", im_array)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        im = Image.fromarray(im_array)
+        imgtk = ImageTk.PhotoImage(image=im)
+
+        result_label.configure(image=imgtk)
+        result_label.image = imgtk
 
 root = tk.Tk()
 root.title("Baldness Detection")
@@ -41,7 +44,11 @@ root.geometry("720x720")
 upload_button = tk.Button(root, text="Upload Image", command=upload_image)
 upload_button.pack(pady=10)
 
+result_label = tk.Label(root)
+result_label.pack(pady=10)
+
 root.mainloop()
+
 
 
 
